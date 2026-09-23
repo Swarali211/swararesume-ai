@@ -36,7 +36,11 @@ function extractJson(text: string): AnalysisResult {
     .trim();
   const match = cleaned.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("AI response was not valid JSON.");
-  return JSON.parse(match[0]) as AnalysisResult;
+  try {
+    return JSON.parse(match[0]) as AnalysisResult;
+  } catch {
+    throw new Error("The analysis response was incomplete. Please try again.");
+  }
 }
 
 export const analyzeResume = createServerFn({ method: "POST" })
@@ -75,7 +79,11 @@ ${data.resumeText}`;
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
+          generationConfig: {
+            temperature: 0.4,
+            maxOutputTokens: 4096,
+            responseMimeType: "application/json",
+          },
         }),
       },
     );

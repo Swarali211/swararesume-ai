@@ -9,6 +9,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "ResumeIQ — AI Resume Analyzer" },
