@@ -1,10 +1,27 @@
 import { useRef, useState } from "react";
-import type * as PdfjsType from "pdfjs-dist";
 import { FileText, Sparkles, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const PDFJS_VERSION = "6.3.289";
 const PDFJS_CDN = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}`;
+
+interface PdfTextItem {
+  str: string;
+}
+interface PdfTextContent {
+  items: PdfTextItem[];
+}
+interface PdfPage {
+  getTextContent(): Promise<PdfTextContent>;
+}
+interface PdfDocument {
+  numPages: number;
+  getPage(n: number): Promise<PdfPage>;
+}
+interface PdfjsModule {
+  GlobalWorkerOptions: { workerSrc: string };
+  getDocument(params: { data: ArrayBuffer }): { promise: Promise<PdfDocument> };
+}
 
 const ROLES = [
   "Frontend Developer",
@@ -40,7 +57,7 @@ export function ResumeInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const extractPdfText = async (file: File): Promise<string> => {
-    const pdfjs: typeof PdfjsType = await import(
+    const pdfjs: PdfjsModule = await import(
       /* @vite-ignore */ `${PDFJS_CDN}/build/pdf.min.mjs`
     );
     pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/build/pdf.worker.min.mjs`;
