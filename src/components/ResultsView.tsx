@@ -8,6 +8,7 @@ import {
   RotateCcw,
   SpellCheck,
   Target,
+  TrendingUp,
   Type,
 } from "lucide-react";
 import type { AnalysisResult } from "@/lib/analyze.functions";
@@ -64,6 +65,58 @@ export function ResultsView({ result, onReset }: Props) {
         <div className="mt-6 flex justify-center">
           <ScoreGauge score={result.overallScore} />
         </div>
+
+        {result.jdMatch && (
+          <div className="card-lift animate-rise mt-8 rounded-xl border border-border/80 bg-background/60 p-5 sm:p-6">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-brand-soft text-brand">
+                <TrendingUp className="size-4.5" />
+              </span>
+              <h3 className="text-lg font-bold text-foreground">Job Match</h3>
+            </div>
+
+            <div className="mt-5 flex items-center gap-4">
+              <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-brand/20 bg-brand-soft text-2xl font-extrabold text-brand">
+                {result.jdMatch.jdMatchScore}
+              </div>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Your resume matches <span className="font-semibold text-foreground">{result.jdMatch.jdMatchScore}%</span> of the job description.
+              </p>
+            </div>
+
+            <div className="mt-6">
+              <p className="mb-2 text-sm font-semibold text-success">
+                Matched Keywords
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {result.jdMatch.matchedKeywords.map((kw, i) => (
+                  <span
+                    key={i}
+                    className="rounded-full bg-success-soft px-3 py-1 text-xs font-medium text-success"
+                  >
+                    {kw}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <p className="mb-2 text-sm font-semibold text-warning">
+                Missing Keywords
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {result.jdMatch.missingKeywords.map((kw, i) => (
+                  <span
+                    key={i}
+                    className="rounded-full bg-warning-soft px-3 py-1 text-xs font-medium text-warning"
+                  >
+                    {kw}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2">
           {result.categories.map((cat, idx) => {

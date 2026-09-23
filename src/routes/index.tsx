@@ -38,6 +38,7 @@ function Index() {
   const [screen, setScreen] = useState<Screen>("input");
   const [resumeText, setResumeText] = useState("");
   const [role, setRole] = useState("Frontend Developer");
+  const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +48,7 @@ function Index() {
     setError(null);
     setScreen("loading");
     try {
-      const res = await run({ data: { resumeText, role: role as never } });
+      const res = await run({ data: { resumeText, role: role as never, jobDescription: jobDescription.trim() || undefined } });
       setResult(res);
       setScreen("results");
     } catch (e) {
@@ -71,6 +72,7 @@ function Index() {
   const handleReset = () => {
     setResult(null);
     setResumeText("");
+    setJobDescription("");
     setError(null);
     setScreen("input");
   };
@@ -84,8 +86,10 @@ function Index() {
         <ResumeInput
           resumeText={resumeText}
           role={role}
+          jobDescription={jobDescription}
           onTextChange={setResumeText}
           onRoleChange={setRole}
+          onJobDescriptionChange={setJobDescription}
           onAnalyze={handleAnalyze}
         />
       )}

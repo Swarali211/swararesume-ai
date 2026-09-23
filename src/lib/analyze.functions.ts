@@ -10,6 +10,7 @@ const AnalyzeInput = z.object({
     "Product Manager",
     "General",
   ]),
+  jobDescription: z.string().optional().nullable(),
 });
 
 export interface CategoryScore {
@@ -23,10 +24,17 @@ export interface Suggestion {
   text: string;
 }
 
+export interface JdMatchData {
+  jdMatchScore: number;
+  matchedKeywords: string[];
+  missingKeywords: string[];
+}
+
 export interface AnalysisResult {
   overallScore: number;
   categories: CategoryScore[];
   suggestions: Suggestion[];
+  jdMatch?: JdMatchData;
 }
 
 function extractJson(text: string): AnalysisResult {
@@ -49,6 +57,20 @@ export const analyzeResume = createServerFn({ method: "POST" })
     const apiKey = process.env["GEMINI_API_KEY"];
     if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
 
+    const hasJd = data.jobDescription && data.jobDescription.trim().length > 0;
+
+    const jdInstructions = hasJd
+      ? `
+
+Also compare the resume to the following job description. Include these three additional fields at the top level of the JSON:
+- "jdMatchScore": number (0-100), how well the resume matches the job description
+- "matchedKeywords": array of strings, keywords from the job description that ARE present in the resume
+- "missingKeywords": array of strings, keywords from the job description that are MISSING from the resume
+
+JOB DESCRIPTION:
+${data.jobDescription!.trim()}`
+      : "";
+
     const prompt = `You are an expert resume reviewer. Analyze the following resume for a "${
       data.role
     }" position.
@@ -64,10 +86,13 @@ Return ONLY valid JSON in this exact structure, with no markdown, no code fences
   ],
   "suggestions": [
     {"type": "warning" | "tip" | "good", "text": "string"}
-  ]
+  ]${hasJd ? `,
+  "jdMatchScore": number (0-100),
+  "matchedKeywords": ["string"],
+  "missingKeywords": ["string"]` : ""}
 }
 
-Give 5-8 specific, actionable suggestions. "warning" = problem to fix, "tip" = improvement idea, "good" = something done well.
+Give 5-8 specific, actionable suggestions. "warning" = problem to fix, "tip" = improvement idea, "good" = something done well.${jdInstructions}
 
 RESUME:
 ${data.resumeText}`;
@@ -101,5 +126,16 @@ ${data.resumeText}`;
       .join("");
     if (!text) throw new Error("Gemini returned an empty response.");
 
-    return extractJson(text);
+    const result = extractJson(text);
+    if (result.jdMatchScore !== undefined && result.matchedKeywords !== undefined) {
+      result.jdMatch = {
+        jdMatchScore: result.jdMatchScore,
+        matchedKeywords: result.matchedKeywords,
+        missingKeywords: result.missingKeywords ?? [],
+      };
+      delete result.jdMatchScore;
+      delete result.matchedKeywords;
+      delete result.missingKeywords;
+    }
+    return result;
   });
