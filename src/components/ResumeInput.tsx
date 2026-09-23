@@ -1,6 +1,10 @@
 import { useRef, useState } from "react";
+import type * as PdfjsType from "pdfjs-dist";
 import { FileText, Sparkles, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const PDFJS_VERSION = "6.3.289";
+const PDFJS_CDN = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}`;
 
 const ROLES = [
   "Frontend Developer",
@@ -36,11 +40,10 @@ export function ResumeInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const extractPdfText = async (file: File): Promise<string> => {
-    const pdfjs = await import("pdfjs-dist");
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      "pdfjs-dist/build/pdf.worker.min.mjs",
-      import.meta.url,
-    ).toString();
+    const pdfjs: typeof PdfjsType = await import(
+      /* @vite-ignore */ `${PDFJS_CDN}/build/pdf.min.mjs`
+    );
+    pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/build/pdf.worker.min.mjs`;
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
     let fullText = "";
