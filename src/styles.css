@@ -59,6 +59,17 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-brand: var(--brand);
+  --color-brand-end: var(--brand-end);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --shadow-premium: 0 20px 60px -32px var(--shadow-color);
+  --shadow-brand: 0 12px 30px -14px var(--brand-shadow);
 }
 
 :root {
@@ -95,6 +106,19 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --brand: oklch(0.56 0.23 275);
+  --brand-end: oklch(0.59 0.24 305);
+  --brand-strong: oklch(0.49 0.24 278);
+  --brand-foreground: oklch(0.99 0.005 280);
+  --brand-soft: oklch(0.95 0.035 285);
+  --success: oklch(0.55 0.15 160);
+  --success-soft: oklch(0.95 0.035 160);
+  --warning: oklch(0.62 0.15 70);
+  --warning-soft: oklch(0.96 0.045 80);
+  --shadow-color: oklch(0.35 0.08 275 / 18%);
+  --brand-shadow: oklch(0.5 0.22 285 / 38%);
+  --canvas-start: oklch(0.97 0.018 273);
+  --canvas-end: oklch(0.98 0.018 315);
 }
 
 .dark {
@@ -130,6 +154,36 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: oklch(0.16 0.025 265);
+  --foreground: oklch(0.96 0.01 260);
+  --card: oklch(0.205 0.031 268);
+  --card-foreground: oklch(0.96 0.01 260);
+  --popover: oklch(0.205 0.031 268);
+  --popover-foreground: oklch(0.96 0.01 260);
+  --primary: oklch(0.7 0.18 280);
+  --primary-foreground: oklch(0.15 0.025 268);
+  --secondary: oklch(0.25 0.032 266);
+  --secondary-foreground: oklch(0.94 0.01 260);
+  --muted: oklch(0.26 0.03 266);
+  --muted-foreground: oklch(0.73 0.03 260);
+  --accent: oklch(0.28 0.045 275);
+  --accent-foreground: oklch(0.96 0.01 260);
+  --border: oklch(0.34 0.035 268);
+  --input: oklch(0.34 0.035 268);
+  --ring: oklch(0.7 0.18 280);
+  --brand: oklch(0.7 0.19 280);
+  --brand-end: oklch(0.73 0.19 310);
+  --brand-strong: oklch(0.76 0.17 280);
+  --brand-foreground: oklch(0.15 0.025 268);
+  --brand-soft: oklch(0.29 0.075 280);
+  --success: oklch(0.73 0.15 160);
+  --success-soft: oklch(0.27 0.06 160);
+  --warning: oklch(0.78 0.14 78);
+  --warning-soft: oklch(0.29 0.06 75);
+  --shadow-color: oklch(0.03 0.01 265 / 55%);
+  --brand-shadow: oklch(0.58 0.2 285 / 32%);
+  --canvas-start: oklch(0.18 0.035 272);
+  --canvas-end: oklch(0.17 0.035 305);
 }
 
 @keyframes rise {
@@ -147,6 +201,64 @@
   animation: rise 0.5s ease-out both;
 }
 
+@keyframes screen-enter {
+  from { opacity: 0; transform: translateY(10px) scale(0.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@keyframes progress-fill {
+  from { width: 0; }
+  to { width: var(--progress); }
+}
+
+@keyframes confetti-fall {
+  0% { opacity: 0; transform: translateY(-8px) rotate(0deg); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(80px) rotate(240deg); }
+}
+
+@utility screen-enter {
+  animation: screen-enter 0.42s ease-out both;
+}
+
+@utility card-lift {
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 65px -34px var(--shadow-color);
+  }
+}
+
+@utility skeleton {
+  background: linear-gradient(100deg, var(--muted) 30%, var(--accent) 48%, var(--muted) 66%);
+  background-size: 300% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+@utility progress-fill {
+  width: var(--progress);
+  animation: progress-fill 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility confetti {
+  animation: confetti-fall 1.7s ease-out both;
+}
+
+@utility brand-text {
+  background: linear-gradient(105deg, var(--brand), var(--brand-end));
+  background-clip: text;
+  color: transparent;
+}
+
+@utility app-canvas {
+  background: linear-gradient(135deg, var(--canvas-start), var(--background) 48%, var(--canvas-end));
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -156,5 +268,14 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
