@@ -5,6 +5,8 @@ import { analyzeResume, type AnalysisResult } from "@/lib/analyze.functions";
 import { ResumeInput } from "@/components/ResumeInput";
 import { LoadingState } from "@/components/LoadingState";
 import { ResultsView } from "@/components/ResultsView";
+import { ErrorState } from "@/components/ErrorState";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,13 +23,15 @@ export const Route = createFileRoute("/")({
         content: "Get instant AI feedback on your resume with ResumeIQ.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://swararesume-ai.lovable.app/" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://swararesume-ai.lovable.app/" }],
   }),
   component: Index,
 });
 
-type Screen = "input" | "loading" | "results";
+type Screen = "input" | "loading" | "error" | "results";
 
 function Index() {
   const [screen, setScreen] = useState<Screen>("input");
@@ -59,7 +63,7 @@ function Index() {
         }
       }
       setError(message);
-      setScreen("input");
+      setScreen("error");
     }
   };
 
@@ -71,18 +75,27 @@ function Index() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-background to-purple-50 px-4 py-12">
+    <main className="app-canvas relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-20 sm:px-6 sm:py-24">
+      <div className="fixed right-4 top-4 z-20 sm:right-6 sm:top-6">
+        <ThemeToggle />
+      </div>
       {screen === "input" && (
         <ResumeInput
           resumeText={resumeText}
           role={role}
-          error={error}
           onTextChange={setResumeText}
           onRoleChange={setRole}
           onAnalyze={handleAnalyze}
         />
       )}
       {screen === "loading" && <LoadingState />}
+      {screen === "error" && (
+        <ErrorState
+          message={error ?? ""}
+          onRetry={handleAnalyze}
+          onBack={() => setScreen("input")}
+        />
+      )}
       {screen === "results" && result && (
         <ResultsView result={result} onReset={handleReset} />
       )}

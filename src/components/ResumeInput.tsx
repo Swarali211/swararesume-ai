@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ROLES = [
   "Frontend Developer",
@@ -11,7 +12,6 @@ const ROLES = [
 interface Props {
   resumeText: string;
   role: string;
-  error: string | null;
   onTextChange: (v: string) => void;
   onRoleChange: (v: string) => void;
   onAnalyze: () => void;
@@ -20,24 +20,26 @@ interface Props {
 export function ResumeInput({
   resumeText,
   role,
-  error,
   onTextChange,
   onRoleChange,
   onAnalyze,
 }: Props) {
   return (
-    <div className="animate-rise w-full max-w-2xl">
+    <section className="screen-enter w-full max-w-2xl" aria-labelledby="resumeiq-title">
       <div className="text-center">
-        <h1 className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl">
+        <div className="mx-auto mb-5 flex size-12 items-center justify-center rounded-xl bg-brand text-brand-foreground shadow-brand">
+          <Sparkles className="size-6" />
+        </div>
+        <h1 id="resumeiq-title" className="brand-text text-4xl font-extrabold sm:text-6xl">
           ResumeIQ
         </h1>
-        <p className="mt-3 text-lg text-muted-foreground">
+        <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-lg">
           Get instant AI feedback on your resume
         </p>
       </div>
 
-      <div className="mt-10 rounded-2xl bg-card p-6 shadow-xl shadow-indigo-500/10 ring-1 ring-border sm:p-8">
-        <label className="mb-2 block text-sm font-medium text-foreground">
+      <div className="card-lift mt-10 rounded-2xl border border-border/80 bg-card/90 p-5 shadow-premium backdrop-blur sm:p-8">
+        <label className="mb-2.5 block text-sm font-semibold text-foreground">
           Your resume
         </label>
         <textarea
@@ -45,16 +47,16 @@ export function ResumeInput({
           onChange={(e) => onTextChange(e.target.value)}
           placeholder="Paste your resume text here..."
           rows={10}
-          className="w-full resize-y rounded-xl border border-input bg-background p-4 text-sm leading-relaxed text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
+          className="min-h-56 w-full resize-y rounded-xl border border-input bg-background/70 p-4 text-[15px] leading-7 text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-brand/50 focus:ring-4 focus:ring-brand/10"
         />
 
-        <label className="mb-2 mt-5 block text-sm font-medium text-foreground">
+        <label className="mb-2.5 mt-6 block text-sm font-semibold text-foreground">
           Target role
         </label>
         <select
           value={role}
           onChange={(e) => onRoleChange(e.target.value)}
-          className="w-full rounded-xl border border-input bg-background p-3 text-sm text-foreground outline-none transition-shadow focus:ring-2 focus:ring-ring"
+          className="h-12 w-full rounded-xl border border-input bg-background/70 px-4 text-sm text-foreground outline-none transition-all focus:border-brand/50 focus:ring-4 focus:ring-brand/10"
         >
           {ROLES.map((r) => (
             <option key={r} value={r}>
@@ -63,20 +65,15 @@ export function ResumeInput({
           ))}
         </select>
 
-        {error && (
-          <p className="mt-4 rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
-          </p>
-        )}
-
-        <button
+        <Button
+          type="button"
           onClick={onAnalyze}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 text-base font-semibold text-primary-foreground shadow-lg shadow-indigo-500/30 transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
+          className="mt-7 h-14 w-full rounded-xl bg-brand text-base font-semibold text-brand-foreground shadow-brand transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-strong hover:shadow-lg active:translate-y-0"
         >
           <Sparkles className="size-5" />
           Analyze My Resume
-        </button>
+        </Button>
       </div>
-    </div>
+    </section>
   );
 }
