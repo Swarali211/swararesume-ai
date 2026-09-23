@@ -48,9 +48,9 @@ function extractJson(text: string): AnalysisResult {
 }
 
 export const analyzeResume = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => AnalyzeInput.parse(input))
+  .validator((input: unknown) => AnalyzeInput.parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY ?? import.meta.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is not available to the server runtime.");
     }
