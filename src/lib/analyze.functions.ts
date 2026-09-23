@@ -50,8 +50,10 @@ function extractJson(text: string): AnalysisResult {
 export const analyzeResume = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => AnalyzeInput.parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env["GEMINI_API_KEY"] ?? import.meta.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not available to the server runtime.");
+    }
 
     const jobDescriptionSection = data.jobDescription?.trim()
       ? `\n\nJOB DESCRIPTION:\n${data.jobDescription}\n\nWhen a job description is provided, also include "jdMatchScore" (0-100), "matchedKeywords" (array of strings), and "missingKeywords" (array of strings) in the JSON.`
