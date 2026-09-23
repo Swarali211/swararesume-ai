@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -89,7 +89,7 @@ export function ResultsView({ result, onReset }: Props) {
                 <div className="mt-5 h-2 overflow-hidden rounded-full bg-muted">
                   <div
                     className="progress-fill h-full rounded-full bg-brand"
-                    style={{ "--progress": `${(cat.score / 25) * 100}%`, animationDelay: `${250 + idx * 100}ms` } as React.CSSProperties}
+                    style={{ "--progress": `${(cat.score / 25) * 100}%`, animationDelay: `${250 + idx * 100}ms` } as CSSProperties}
                   />
                 </div>
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">
