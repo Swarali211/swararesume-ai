@@ -10,6 +10,7 @@ const AnalyzeInput = z.object({
     "Product Manager",
     "General",
   ]),
+  jobDescription: z.string().max(12000).optional(),
 });
 
 export interface CategoryScore {
@@ -27,6 +28,9 @@ export interface AnalysisResult {
   overallScore: number;
   categories: CategoryScore[];
   suggestions: Suggestion[];
+  jdMatchScore?: number;
+  matchedKeywords?: string[];
+  missingKeywords?: string[];
 }
 
 function extractJson(text: string): AnalysisResult {
@@ -49,6 +53,9 @@ export const analyzeResume = createServerFn({ method: "POST" })
     const apiKey = process.env["GEMINI_API_KEY"];
     if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
 
+    const jobDescriptionSection = data.jobDescription?.trim()
+      ? `\n\nJOB DESCRIPTION:\n${data.jobDescription}\n\nWhen a job description is provided, also include "jdMatchScore" (0-100), "matchedKeywords" (array of strings), and "missingKeywords" (array of strings) in the JSON.`
+      : "";
     const prompt = `You are an expert resume reviewer. Analyze the following resume for a "${
       data.role
     }" position.
@@ -70,10 +77,10 @@ Return ONLY valid JSON in this exact structure, with no markdown, no code fences
 Give 5-8 specific, actionable suggestions. "warning" = problem to fix, "tip" = improvement idea, "good" = something done well.
 
 RESUME:
-${data.resumeText}`;
+${data.resumeText}${jobDescriptionSection}`;
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,9 +103,7 @@ ${data.resumeText}`;
     const json = (await res.json()) as {
       candidates?: { content?: { parts?: { text?: string }[] } }[];
     };
-    const text = json.candidates?.[0]?.content?.parts
-      ?.map((p) => p.text ?? "")
-      .join("");
+    const text = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("");
     if (!text) throw new Error("Gemini returned an empty response.");
 
     return extractJson(text);

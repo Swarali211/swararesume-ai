@@ -47,7 +47,10 @@ export function ResultsView({ result, onReset }: Props) {
   return (
     <section className="screen-enter relative w-full max-w-3xl">
       {result.overallScore >= 80 && (
-        <div className="pointer-events-none absolute inset-x-0 -top-7 h-28 overflow-hidden" aria-hidden="true">
+        <div
+          className="pointer-events-none absolute inset-x-0 -top-7 h-28 overflow-hidden"
+          aria-hidden="true"
+        >
           {CONFETTI.map(([x, y, color, rotate], index) => (
             <span
               key={index}
@@ -64,6 +67,58 @@ export function ResultsView({ result, onReset }: Props) {
         <div className="mt-6 flex justify-center">
           <ScoreGauge score={result.overallScore} />
         </div>
+
+        {typeof result.jdMatchScore === "number" && (
+          <div className="card-lift mt-8 rounded-xl border border-border/80 bg-background/60 p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-muted-foreground">Job description match</p>
+                <p className="mt-1 text-3xl font-bold text-foreground">
+                  {result.jdMatchScore}
+                  <span className="text-base text-muted-foreground">/100</span>
+                </p>
+              </div>
+              <div className="h-3 w-28 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-success"
+                  style={{ width: `${result.jdMatchScore}%` }}
+                />
+              </div>
+            </div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-success">
+                  Matched keywords
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(result.matchedKeywords ?? []).map((keyword) => (
+                    <span
+                      key={keyword}
+                      className="rounded-full bg-success-soft px-2.5 py-1 text-xs font-medium text-success"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-warning">
+                  Missing keywords
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(result.missingKeywords ?? []).map((keyword) => (
+                    <span
+                      key={keyword}
+                      className="rounded-full bg-warning-soft px-2.5 py-1 text-xs font-medium text-warning"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2">
           {result.categories.map((cat, idx) => {
@@ -89,12 +144,15 @@ export function ResultsView({ result, onReset }: Props) {
                 <div className="mt-5 h-2 overflow-hidden rounded-full bg-muted">
                   <div
                     className="progress-fill h-full rounded-full bg-brand"
-                    style={{ "--progress": `${(cat.score / 25) * 100}%`, animationDelay: `${250 + idx * 100}ms` } as CSSProperties}
+                    style={
+                      {
+                        "--progress": `${(cat.score / 25) * 100}%`,
+                        animationDelay: `${250 + idx * 100}ms`,
+                      } as CSSProperties
+                    }
                   />
                 </div>
-                <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                  {cat.feedback}
-                </p>
+                <p className="mt-4 text-sm leading-6 text-muted-foreground">{cat.feedback}</p>
               </div>
             );
           })}
