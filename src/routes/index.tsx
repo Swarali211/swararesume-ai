@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
   staticData: { sitemap: true },
   head: () => ({
     meta: [
