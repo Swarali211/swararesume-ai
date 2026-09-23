@@ -26,7 +26,7 @@ export function ScoreGauge({ score }: { score: number }) {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative size-52">
+      <div className="relative size-44 sm:size-52">
         <svg viewBox="0 0 200 200" className="size-full -rotate-90">
           <circle
             cx="100"
@@ -34,7 +34,7 @@ export function ScoreGauge({ score }: { score: number }) {
             r={r}
             fill="none"
             strokeWidth="14"
-            className="stroke-indigo-100"
+            className="stroke-muted"
           />
           <circle
             cx="100"
@@ -50,17 +50,17 @@ export function ScoreGauge({ score }: { score: number }) {
           />
           <defs>
             <linearGradient id="gauge-gradient" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#4f46e5" />
-              <stop offset="100%" stopColor="#9333ea" />
+              <stop offset="0%" stopColor="var(--brand)" />
+              <stop offset="100%" stopColor="var(--brand-end)" />
             </linearGradient>
           </defs>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-5xl font-bold text-foreground">{value}</span>
-          <span className="text-sm text-muted-foreground">out of 100</span>
+          <span className="text-6xl font-extrabold text-foreground sm:text-7xl">{value}</span>
+          <span className="mt-1 text-xs font-medium uppercase text-muted-foreground">out of 100</span>
         </div>
       </div>
-      <p className="mt-4 text-xl font-semibold text-foreground">{label}</p>
+      <p className="mt-4 text-lg font-bold text-foreground">{label}</p>
     </div>
   );
 }
