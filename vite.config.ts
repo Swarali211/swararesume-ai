@@ -7,6 +7,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Rebuild optimized dependencies on each server start so the TanStack Start
+  // client entry cannot point at a stale module after dependency changes.
+  optimizeDeps: { force: true },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
