@@ -46,11 +46,19 @@ function Index() {
       setResult(res);
       setScreen("results");
     } catch (e) {
-      setError(
+      let message =
         e instanceof Error
           ? e.message
-          : "Something went wrong analyzing your resume. Please try again.",
-      );
+          : "Something went wrong analyzing your resume. Please try again.";
+      if (message.startsWith("[")) {
+        try {
+          const issues = JSON.parse(message) as { message?: string }[];
+          message = issues[0]?.message ?? message;
+        } catch {
+          /* keep raw message */
+        }
+      }
+      setError(message);
       setScreen("input");
     }
   };
