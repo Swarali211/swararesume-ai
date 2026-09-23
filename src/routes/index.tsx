@@ -1,24 +1,83 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { analyzeResume, type AnalysisResult } from "@/lib/analyze.functions";
+import { ResumeInput } from "@/components/ResumeInput";
+import { LoadingState } from "@/components/LoadingState";
+import { ResultsView } from "@/components/ResultsView";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "ResumeIQ — AI Resume Analyzer" },
+      {
+        name: "description",
+        content:
+          "Get instant AI feedback on your resume. Score clarity, impact, keywords and formatting, and get actionable suggestions.",
+      },
+      { property: "og:title", content: "ResumeIQ — AI Resume Analyzer" },
+      {
+        property: "og:description",
+        content: "Get instant AI feedback on your resume with ResumeIQ.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+type Screen = "input" | "loading" | "results";
+
 function Index() {
+  const [screen, setScreen] = useState<Screen>("input");
+  const [resumeText, setResumeText] = useState("");
+  const [role, setRole] = useState("Frontend Developer");
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const run = useServerFn(analyzeResume);
+
+  const handleAnalyze = async () => {
+    setError(null);
+    setScreen("loading");
+    try {
+      const res = await run({ data: { resumeText, role: role as never } });
+      setResult(res);
+      setScreen("results");
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Something went wrong analyzing your resume. Please try again.",
+      );
+      setScreen("input");
+    }
+  };
+
+  const handleReset = () => {
+    setResult(null);
+    setResumeText("");
+    setError(null);
+    setScreen("input");
+  };
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-background to-purple-50 px-4 py-12">
+      {screen === "input" && (
+        <ResumeInput
+          resumeText={resumeText}
+          role={role}
+          error={error}
+          onTextChange={setResumeText}
+          onRoleChange={setRole}
+          onAnalyze={handleAnalyze}
+        />
+      )}
+      {screen === "loading" && <LoadingState />}
+      {screen === "results" && result && (
+        <ResultsView result={result} onReset={handleReset} />
+      )}
+    </main>
   );
 }
