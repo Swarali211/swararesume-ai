@@ -55,7 +55,7 @@ export function ResumeInput({
       );
       onTextChange(pages.join("\n\n"));
     } catch {
-      setFileError("We couldn&apos;t read that PDF. Try pasting the text instead.");
+      setFileError("We couldn't read that PDF. Try pasting the text instead.");
     } finally {
       setParsing(false);
     }
